@@ -1,0 +1,940 @@
+#:kivy 2.1.0
+#:import NoTransition kivy.uix.screenmanager.NoTransition
+#:import NoTransition kivy.uix.screenmanager.NoTransition
+#:import hex kivy.utils.get_color_from_hex
+#:import assets assets
+
+<Manager>:
+    transition: NoTransition()
+    Home:
+        name: 'home'
+        ImageBtn:
+            id: arthur
+            source: assets.HOME_IMAGES['arthur'][1]
+            pos_hint: {"center_x":.23,"center_y":.38}
+            on_release: app.game.choose_hero('arthur')
+
+        ImageBtn:
+            id: merlin
+            source: assets.HOME_IMAGES['merlin'][0]
+            pos_hint: {"center_x":.77,"center_y":.48}
+            on_release: app.game.choose_hero('merlin')
+
+        Button:
+            id: start_btn
+            size: 160, 60
+            size_hint: None, None
+            pos_hint:{"center_x":.5,"center_y":.5}
+            on_release: app.game.start_game()
+            background_normal: './img/UI/btn_start_n.png'
+            background_down: './img/UI/btn_start_mo.png'
+    Battle:
+        name: 'battle'
+        AnchorLayout:
+            padding: 40
+            anchor_x: 'left'
+            anchor_y: 'top'
+            Chat:
+                id: chat
+                bg_color: hex('745b48')
+                text: ''
+                valign: 'top'
+                halign: 'left'
+                padding: 20, 20
+                text_size: self.size
+                font_size: 20
+                font_name: "Roboto"
+                size: 600, 185
+                line_height: 1.5
+                markup: False
+
+        # Enemy meta
+        AnchorLayout:
+            padding: 40
+            anchor_x: 'right'
+            anchor_y: 'top'
+            BoxLayout:
+                orientation: 'vertical'
+                size_hint: None, None
+                size: self.minimum_size
+                Image:
+                    id: enemy_img
+                    size_hint: None, None
+                    size: 240, 240
+                    source: None
+                    Label:
+                        size: self.parent.size
+                        pos: self.parent.pos
+                        id: enemy_damaged
+                        text: 'Test'
+                        text_size: self.size
+                        font_size: 80
+                        valign: 'center'
+                        halign: 'center'
+                        opacity: 0
+                BoxLayout:
+                    size_hint: None, None
+                    size: 240, 50
+                    Label:
+                        id: enemy_lvl
+                        text: ''
+                        text_size: self.size
+                        font_size: sp(16)
+                        valign: 'center'
+                        halign: 'center'
+                    Label:
+                        id: enemy_hp
+                        text: ''
+                        text_size: self.size
+                        font_size: sp(16)
+                        valign: 'center'
+                        halign: 'center'
+        # Hero meta
+        AnchorLayout:
+            padding: 40
+            anchor_x: 'left'
+            anchor_y: 'bottom'
+            BoxLayout:
+                orientation: 'vertical'
+                size_hint: None, None
+                size: self.minimum_size
+                BoxLayout:
+                    size_hint: None, None
+                    size: 240, 50
+                    Label:
+                        id: hero_lvl
+                        text: ''
+                        text_size: self.size
+                        font_size: sp(16)
+                        valign: 'center'
+                        halign: 'center'
+                    Label:
+                        id: hero_hp
+                        text: ''
+                        text_size: self.size
+                        font_size: sp(16)
+                        valign: 'center'
+                        halign: 'center'
+                BoxLayout:
+                    spacing: 20
+                    size_hint: None, None
+                    size: self.minimum_size
+                    Image:
+                        id: hero_ava
+                        size_hint: None, None
+                        size: self.texture_size
+                        source: None
+                        Label:
+                            size: self.parent.size
+                            pos: self.parent.pos
+                            id: hero_damaged
+                            text: 'Test'
+                            text_size: self.size
+                            font_size: 80
+                            valign: 'center'
+                            halign: 'center'
+                            opacity: 0
+                    Image:
+                        id: hero_weapon
+                        size_hint: None, None
+                        size: self.texture_size
+                        source: None
+        # Hero's buttons
+        AnchorLayout:
+            padding: 40
+            anchor_x: 'right'
+            anchor_y: 'bottom'
+            BoxLayout:
+                size_hint: None, None
+                size: self.minimum_size
+                spacing: 40
+                Button:
+                    id: hero_ability_1
+                    size_hint: None, None
+                    size: 120, 120
+                    on_release: app.game.hero_turn(1)
+                    disabled: True
+                    background_down: self.background_normal
+                Button:
+                    id: hero_ability_2
+                    size_hint: None, None
+                    size: 120, 120
+                    on_release: app.game.hero_turn(2)
+                    disabled: True
+                    opacity: 0
+                    background_down: self.background_normal
+                Button:
+                    size_hint: None, None
+                    size: 120, 120
+                    on_release: app.game.hero_turn(3)
+                    disabled: True
+                    opacity: 0
+                    background_down: self.background_normal
+
+        # End of the round buttons
+        AnchorLayout:
+            Button:
+                id: checkout_btn
+                size_hint: None, None
+                on_release: app.game.checkpoint()
+                disabled: True
+                opacity: 0
+                size: 160, 60
+                background_normal: './img/UI/btn_continue_n.png'
+                background_down: self.background_normal
+            Button:
+                id: again_btn
+                size_hint: None, None
+                on_release: app.game.proceed_game('again')
+                disabled: True
+                opacity: 0
+                size: 160, 60
+                background_normal: './img/UI/btn_continue_n.png'
+                background_down: self.background_normal
+
+    Menu:
+        name: 'menu'
+        AnchorLayout:
+            BoxLayout:
+                orientation: 'vertical'
+                size_hint: None, None
+                size: self.minimum_size
+                spacing: 10
+                Button:
+                    id: resume_btn
+                    size_hint: None, None
+                    size: 160, 60
+                    on_release: root.current = 'battle'
+                    background_normal: './img/UI/btn_resume_n.png'
+                    background_down: './img/UI/btn_resume_mo.png'
+                Button:
+                    id: restart_btn
+                    size_hint: None, None
+                    size: 160, 60
+                    on_release: app.game.proceed_game('restart')
+                    background_normal: './img/UI/btn_restart_n.png'
+                    background_down: './img/UI/btn_restart_mo.png'
+                Button:
+                    id: reset_btn
+                    size_hint: None, None
+                    size: 160, 60
+                    on_release: app.game.proceed_game('reset')
+                    background_normal: './img/UI/btn_reset_n.png'
+                    background_down: './img/UI/btn_reset_mo.png'
+
+    Checkpoint:
+        name: 'checkpoint'
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint: None, None
+            size: 800, 400
+            pos_hint: {'center_x': .5, 'center_y': .5}
+
+            # First line
+            AnchorLayout:
+                size_hint_y: None
+                height: 80
+                anchor_y: 'top'
+                Label:
+                    id: round_result
+                    text: 'Round result'
+                    size_hint: None, None
+                    size: 410, 60
+                    pos_hint: {'center_x': .5, 'top_y': 0}
+
+            # Second line
+            AnchorLayout:
+                size_hint_y: None
+                height: 240
+                BoxLayout:
+                    size_hint_x: None
+                    size: self.minimum_size
+                    spacing: 20
+                    GridLayout:
+                        cols: 3
+                        spacing: 20
+                        size_hint_x: None
+                        width: 250
+                        Label:
+                            text: 'Выносливость'
+                            halign: 'left'
+                            valign: 'middle'
+                            text_size: self.size
+                            size_hint_x: .55
+                        Label:
+                            id: stamina_label
+                            text: '0'
+                            size_hint_x: .2
+                        Button:
+                            id: stamina_spend
+                            size_hint_x: .25
+                            on_release: app.game.spend_sp('stamina')
+                            background_normal: './img/UI/btn_plus_mo.png'
+                            background_down: self.background_normal
+                            background_disabled_normal: './img/UI/btn_plus_n.png'
+                        Label:
+                            text: 'Сила'
+                            halign: 'left'
+                            valign: 'middle'
+                            text_size: self.size
+                            size_hint_x: .55
+                        Label:
+                            id: strength_label
+                            text: '0'
+                            size_hint_x: .2
+                        Button:
+                            id: strength_spend
+                            size_hint_x: .25
+                            on_release: app.game.spend_sp('strength')
+                            background_normal: './img/UI/btn_plus_mo.png'
+                            background_down: self.background_normal
+                            background_disabled_normal: './img/UI/btn_plus_n.png'
+                        Label:
+                            text: 'Ловкость'
+                            halign: 'left'
+                            valign: 'middle'
+                            text_size: self.size
+                            size_hint_x: .55
+                        Label:
+                            id: agility_label
+                            text: '0'
+                            size_hint_x: .2
+                        Button:
+                            id: agility_spend
+                            size_hint_x: .25
+                            on_release: app.game.spend_sp('agility')
+                            background_normal: './img/UI/btn_plus_mo.png'
+                            background_down: self.background_normal
+                            background_disabled_normal: './img/UI/btn_plus_n.png'
+                        Label:
+                            text: 'Сила умений'
+                            halign: 'left'
+                            valign: 'middle'
+                            text_size: self.size
+                            size_hint_x: .55
+                        Label:
+                            id: ability_power_label
+                            text: '0'
+                            size_hint_x: .2
+                        Button:
+                            id: ability_power_spend
+                            size_hint_x: .25
+                            on_release: app.game.spend_sp('ability_power')
+                            background_normal: './img/UI/btn_plus_mo.png'
+                            background_down: self.background_normal
+                            background_disabled_normal: './img/UI/btn_plus_n.png'
+                    BoxLayout:
+                        size_hint_x: None
+                        size: self.minimum_size
+                        spacing: 20
+                        Image:
+                            id: hero_weapon_chpt
+                            size_hint: None, None
+                            size: self.texture_size
+                            source: None
+                        Image:
+                            id: hero_ava_chpt
+                            size_hint: None, None
+                            size: self.texture_size
+                            source: None
+
+            # Third line
+            AnchorLayout:
+                size_hint_y: None
+                height: 80
+                anchor_y: 'bottom'
+                Button:
+                    id: continue_btn
+                    size_hint: None, None
+                    on_release: app.game.proceed_game('continue')
+                    disabled: True
+                    size: 160, 60
+                    background_normal: './img/UI/btn_continue_mo.png'
+                    background_down: self.background_normal
+                    background_disabled_normal: './img/UI/btn_continue_n.png'
+
+    Stages:
+        name: 'stages'
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint: .8, .5
+            pos_hint:{"center_x":.5,"center_y":.5}
+            Label:
+                text: 'Choose the stage'
+                font_size: 20
+                size_hint_y: .1
+            # Widget:
+            #     size_hint_y: .2
+            Label:
+                id: game_beat
+                text: 'You beat the game with this hero!'
+                opacity: 0
+                size_hint_y: .2
+            GridLayout:
+                size_hint_y: .4
+                bg_color: .5, .5, 0, 1
+                cols: 25
+                #spacing: 5
+                StageButton:
+                    id: stage_1
+                    text: '1'
+                    border: 0, 0, 0, 0
+                    on_release: app.game.start_game(0)
+                StageButton:
+                    id: stage_2
+                    text: '2'
+                    border: 0, 0, 0, 0
+                    on_release: app.game.start_game(1)
+                StageButton:
+                    id: stage_3
+                    text: '3'
+                    border: 0, 0, 0, 0
+                    on_release: app.game.start_game(2)
+                StageButton:
+                    id: stage_4
+                    text: '4'
+                    border: 0, 0, 0, 0
+                    on_release: app.game.start_game(3)
+                StageButton:
+                    id: stage_5
+                    text: '5'
+                    border: 0, 0, 0, 0
+                    on_release: app.game.start_game(4)
+                StageButton:
+                    id: stage_6
+                    text: '6'
+                    border: 0, 0, 0, 0
+                    on_release: app.game.start_game(5)
+                StageButton:
+                    id: stage_7
+                    text: '7'
+                    border: 0, 0, 0, 0
+                    on_release: app.game.start_game(6)
+                StageButton:
+                    id: stage_8
+                    text: '8'
+                    border: 0, 0, 0, 0
+                    on_release: app.game.start_game(7)
+                StageButton:
+                    id: stage_9
+                    text: '9'
+                    border: 0, 0, 0, 0
+                    on_release: app.game.start_game(8)
+                StageButton:
+                    id: stage_10
+                    text: '10'
+                    border: 0, 0, 0, 0
+                    on_release: app.game.start_game(9)
+                StageButton:
+                    id: stage_11
+                    text: '11'
+                    border: 0, 0, 0, 0
+                    on_release: app.game.start_game(10)
+                StageButton:
+                    id: stage_12
+                    text: '12'
+                    border: 0, 0, 0, 0
+                    on_release: app.game.start_game(11)
+                StageButton:
+                    id: stage_13
+                    text: '13'
+                    border: 0, 0, 0, 0
+                    on_release: app.game.start_game(12)
+                StageButton:
+                    id: stage_14
+                    text: '14'
+                    border: 0, 0, 0, 0
+                    on_release: app.game.start_game(13)
+                StageButton:
+                    id: stage_15
+                    text: '15'
+                    border: 0, 0, 0, 0
+                    on_release: app.game.start_game(14)
+                StageButton:
+                    id: stage_16
+                    text: '16'
+                    border: 0, 0, 0, 0
+                    on_release: app.game.start_game(15)
+                StageButton:
+                    id: stage_17
+                    text: '17'
+                    border: 0, 0, 0, 0
+                    on_release: app.game.start_game(16)
+                StageButton:
+                    id: stage_18
+                    text: '18'
+                    border: 0, 0, 0, 0
+                    on_release: app.game.start_game(17)
+                StageButton:
+                    id: stage_19
+                    text: '19'
+                    border: 0, 0, 0, 0
+                    on_release: app.game.start_game(18)
+                StageButton:
+                    id: stage_20
+                    text: '20'
+                    border: 0, 0, 0, 0
+                    on_release: app.game.start_game(19)
+                StageButton:
+                    id: stage_21
+                    text: '21'
+                    border: 0, 0, 0, 0
+                    on_release: app.game.start_game(20)
+                StageButton:
+                    id: stage_22
+                    text: '22'
+                    border: 0, 0, 0, 0
+                    on_release: app.game.start_game(21)
+                StageButton:
+                    id: stage_23
+                    text: '23'
+                    border: 0, 0, 0, 0
+                    on_release: app.game.start_game(22)
+                StageButton:
+                    id: stage_24
+                    text: '24'
+                    border: 0, 0, 0, 0
+                    on_release: app.game.start_game(23)
+                StageButton:
+                    id: stage_25
+                    text: '25'
+                    border: 0, 0, 0, 0
+                    on_release: app.game.start_game(24)
+                StageButton:
+                    id: stage_26
+                    text: '26'
+                    border: 0, 0, 0, 0
+                    on_release: app.game.start_game(25)
+                StageButton:
+                    id: stage_27
+                    text: '27'
+                    border: 0, 0, 0, 0
+                    on_release: app.game.start_game(26)
+                StageButton:
+                    id: stage_28
+                    text: '28'
+                    border: 0, 0, 0, 0
+                    on_release: app.game.start_game(27)
+                StageButton:
+                    id: stage_29
+                    text: '29'
+                    border: 0, 0, 0, 0
+                    on_release: app.game.start_game(28)
+                StageButton:
+                    id: stage_30
+                    text: '30'
+                    border: 0, 0, 0, 0
+                    on_release: app.game.start_game(29)
+                StageButton:
+                    id: stage_31
+                    text: '31'
+                    border: 0, 0, 0, 0
+                    on_release: app.game.start_game(30)
+                StageButton:
+                    id: stage_32
+                    text: '32'
+                    border: 0, 0, 0, 0
+                    on_release: app.game.start_game(31)
+                StageButton:
+                    id: stage_33
+                    text: '33'
+                    border: 0, 0, 0, 0
+                    on_release: app.game.start_game(32)
+                StageButton:
+                    id: stage_34
+                    text: '34'
+                    border: 0, 0, 0, 0
+                    on_release: app.game.start_game(33)
+                StageButton:
+                    id: stage_35
+                    text: '35'
+                    border: 0, 0, 0, 0
+                    on_release: app.game.start_game(34)
+                StageButton:
+                    id: stage_36
+                    text: '36'
+                    border: 0, 0, 0, 0
+                    on_release: app.game.start_game(35)
+                StageButton:
+                    id: stage_37
+                    text: '37'
+                    border: 0, 0, 0, 0
+                    on_release: app.game.start_game(36)
+                StageButton:
+                    id: stage_38
+                    text: '38'
+                    border: 0, 0, 0, 0
+                    on_release: app.game.start_game(37)
+                StageButton:
+                    id: stage_39
+                    text: '39'
+                    border: 0, 0, 0, 0
+                    on_release: app.game.start_game(38)
+                StageButton:
+                    id: stage_40
+                    text: '40'
+                    border: 0, 0, 0, 0
+                    on_release: app.game.start_game(39)
+                StageButton:
+                    id: stage_41
+                    text: '41'
+                    border: 0, 0, 0, 0
+                    on_release: app.game.start_game(40)
+                StageButton:
+                    id: stage_42
+                    text: '42'
+                    border: 0, 0, 0, 0
+                    on_release: app.game.start_game(41)
+                StageButton:
+                    id: stage_43
+                    text: '43'
+                    border: 0, 0, 0, 0
+                    on_release: app.game.start_game(42)
+                StageButton:
+                    id: stage_44
+                    text: '44'
+                    border: 0, 0, 0, 0
+                    on_release: app.game.start_game(43)
+                StageButton:
+                    id: stage_45
+                    text: '45'
+                    border: 0, 0, 0, 0
+                    on_release: app.game.start_game(44)
+                StageButton:
+                    id: stage_46
+                    text: '46'
+                    border: 0, 0, 0, 0
+                    on_release: app.game.start_game(45)
+                StageButton:
+                    id: stage_47
+                    text: '47'
+                    border: 0, 0, 0, 0
+                    on_release: app.game.start_game(46)
+                StageButton:
+                    id: stage_48
+                    text: '48'
+                    border: 0, 0, 0, 0
+                    on_release: app.game.start_game(47)
+                StageButton:
+                    id: stage_49
+                    text: '49'
+                    border: 0, 0, 0, 0
+                    on_release: app.game.start_game(48)
+                StageButton:
+                    id: stage_50
+                    text: '50'
+                    border: 0, 0, 0, 0
+                    on_release: app.game.start_game(49)
+                StageButton:
+                    id: stage_51
+                    text: '51'
+                    border: 0, 0, 0, 0
+                    on_release: app.game.start_game(50)
+                StageButton:
+                    id: stage_52
+                    text: '52'
+                    border: 0, 0, 0, 0
+                    on_release: app.game.start_game(51)
+                StageButton:
+                    id: stage_53
+                    text: '53'
+                    border: 0, 0, 0, 0
+                    on_release: app.game.start_game(52)
+                StageButton:
+                    id: stage_54
+                    text: '54'
+                    border: 0, 0, 0, 0
+                    on_release: app.game.start_game(53)
+                StageButton:
+                    id: stage_55
+                    text: '55'
+                    border: 0, 0, 0, 0
+                    on_release: app.game.start_game(54)
+                StageButton:
+                    id: stage_56
+                    text: '56'
+                    border: 0, 0, 0, 0
+                    on_release: app.game.start_game(55)
+                StageButton:
+                    id: stage_57
+                    text: '57'
+                    border: 0, 0, 0, 0
+                    on_release: app.game.start_game(56)
+                StageButton:
+                    id: stage_58
+                    text: '58'
+                    border: 0, 0, 0, 0
+                    on_release: app.game.start_game(57)
+                StageButton:
+                    id: stage_59
+                    text: '59'
+                    border: 0, 0, 0, 0
+                    on_release: app.game.start_game(58)
+                StageButton:
+                    id: stage_60
+                    text: '60'
+                    border: 0, 0, 0, 0
+                    on_release: app.game.start_game(59)
+                StageButton:
+                    id: stage_61
+                    text: '61'
+                    border: 0, 0, 0, 0
+                    on_release: app.game.start_game(60)
+                StageButton:
+                    id: stage_62
+                    text: '62'
+                    border: 0, 0, 0, 0
+                    on_release: app.game.start_game(61)
+                StageButton:
+                    id: stage_63
+                    text: '63'
+                    border: 0, 0, 0, 0
+                    on_release: app.game.start_game(62)
+                StageButton:
+                    id: stage_64
+                    text: '64'
+                    border: 0, 0, 0, 0
+                    on_release: app.game.start_game(63)
+                StageButton:
+                    id: stage_65
+                    text: '65'
+                    border: 0, 0, 0, 0
+                    on_release: app.game.start_game(64)
+                StageButton:
+                    id: stage_66
+                    text: '66'
+                    border: 0, 0, 0, 0
+                    on_release: app.game.start_game(65)
+                StageButton:
+                    id: stage_67
+                    text: '67'
+                    border: 0, 0, 0, 0
+                    on_release: app.game.start_game(66)
+                StageButton:
+                    id: stage_68
+                    text: '68'
+                    border: 0, 0, 0, 0
+                    on_release: app.game.start_game(67)
+                StageButton:
+                    id: stage_69
+                    text: '69'
+                    border: 0, 0, 0, 0
+                    on_release: app.game.start_game(68)
+                StageButton:
+                    id: stage_70
+                    text: '70'
+                    border: 0, 0, 0, 0
+                    on_release: app.game.start_game(69)
+                StageButton:
+                    id: stage_71
+                    text: '71'
+                    border: 0, 0, 0, 0
+                    on_release: app.game.start_game(70)
+                StageButton:
+                    id: stage_72
+                    text: '72'
+                    border: 0, 0, 0, 0
+                    on_release: app.game.start_game(71)
+                StageButton:
+                    id: stage_73
+                    text: '73'
+                    border: 0, 0, 0, 0
+                    on_release: app.game.start_game(72)
+                StageButton:
+                    id: stage_74
+                    text: '74'
+                    border: 0, 0, 0, 0
+                    on_release: app.game.start_game(73)
+                StageButton:
+                    id: stage_75
+                    text: '75'
+                    border: 0, 0, 0, 0
+                    on_release: app.game.start_game(74)
+                StageButton:
+                    id: stage_76
+                    text: '76'
+                    border: 0, 0, 0, 0
+                    on_release: app.game.start_game(75)
+                StageButton:
+                    id: stage_77
+                    text: '77'
+                    border: 0, 0, 0, 0
+                    on_release: app.game.start_game(76)
+                StageButton:
+                    id: stage_78
+                    text: '78'
+                    border: 0, 0, 0, 0
+                    on_release: app.game.start_game(77)
+                StageButton:
+                    id: stage_79
+                    text: '79'
+                    border: 0, 0, 0, 0
+                    on_release: app.game.start_game(78)
+                StageButton:
+                    id: stage_80
+                    text: '80'
+                    border: 0, 0, 0, 0
+                    on_release: app.game.start_game(79)
+                StageButton:
+                    id: stage_81
+                    text: '81'
+                    border: 0, 0, 0, 0
+                    on_release: app.game.start_game(80)
+                StageButton:
+                    id: stage_82
+                    text: '82'
+                    border: 0, 0, 0, 0
+                    on_release: app.game.start_game(81)
+                StageButton:
+                    id: stage_83
+                    text: '83'
+                    border: 0, 0, 0, 0
+                    on_release: app.game.start_game(82)
+                StageButton:
+                    id: stage_84
+                    text: '84'
+                    border: 0, 0, 0, 0
+                    on_release: app.game.start_game(83)
+                StageButton:
+                    id: stage_85
+                    text: '85'
+                    border: 0, 0, 0, 0
+                    on_release: app.game.start_game(84)
+                StageButton:
+                    id: stage_86
+                    text: '86'
+                    border: 0, 0, 0, 0
+                    on_release: app.game.start_game(85)
+                StageButton:
+                    id: stage_87
+                    text: '87'
+                    border: 0, 0, 0, 0
+                    on_release: app.game.start_game(86)
+                StageButton:
+                    id: stage_88
+                    text: '88'
+                    border: 0, 0, 0, 0
+                    on_release: app.game.start_game(87)
+                StageButton:
+                    id: stage_89
+                    text: '89'
+                    border: 0, 0, 0, 0
+                    on_release: app.game.start_game(88)
+                StageButton:
+                    id: stage_90
+                    text: '90'
+                    border: 0, 0, 0, 0
+                    on_release: app.game.start_game(89)
+                StageButton:
+                    id: stage_91
+                    text: '91'
+                    border: 0, 0, 0, 0
+                    on_release: app.game.start_game(90)
+                StageButton:
+                    id: stage_92
+                    text: '92'
+                    border: 0, 0, 0, 0
+                    on_release: app.game.start_game(91)
+                StageButton:
+                    id: stage_93
+                    text: '93'
+                    border: 0, 0, 0, 0
+                    on_release: app.game.start_game(92)
+                StageButton:
+                    id: stage_94
+                    text: '94'
+                    border: 0, 0, 0, 0
+                    on_release: app.game.start_game(93)
+                StageButton:
+                    id: stage_95
+                    text: '95'
+                    border: 0, 0, 0, 0
+                    on_release: app.game.start_game(94)
+                StageButton:
+                    id: stage_96
+                    text: '96'
+                    border: 0, 0, 0, 0
+                    on_release: app.game.start_game(95)
+                StageButton:
+                    id: stage_97
+                    text: '97'
+                    border: 0, 0, 0, 0
+                    on_release: app.game.start_game(96)
+                StageButton:
+                    id: stage_98
+                    text: '98'
+                    border: 0, 0, 0, 0
+                    on_release: app.game.start_game(97)
+                StageButton:
+                    id: stage_99
+                    text: '99'
+                    border: 0, 0, 0, 0
+                    on_release: app.game.start_game(98)
+                StageButton:
+                    id: stage_100
+                    text: '100'
+                    border: 0, 0, 0, 0
+                    on_release: app.game.start_game(99)
+            AnchorLayout:
+                size_hint_y: .3
+                anchor_y: 'bottom'
+                Button:
+                    id: exit_btn
+                    size_hint: None, None
+                    on_release: app.game.proceed_game('restart')
+                    opacity: 0
+                    size: 160, 60
+                    background_normal: './img/UI/btn_restart_n.png'
+                    background_down: './img/UI/btn_restart_mo.png'
+
+<Home>:
+    canvas:
+        Rectangle:
+            size: self.size
+            pos: self.pos
+            source: './img/BG/bg_home.png'
+
+<Battle>:
+    canvas:
+        Color:
+            rgb: 0, 0, 0
+        Rectangle:
+            size: self.size
+
+<Menu>:
+    canvas:
+        Color:
+            rgb: 0, 0, 0
+        Rectangle:
+            size: self.size
+
+<ImageBtn@Image+Button>:
+    pos: self.pos
+    background_color: 0, 0, 0, 0
+    size_hint: None, None
+    size: self.texture_size
+<StageButton@Button>:
+    background_color: '4a6985'
+    disabled: True
+    # background_normal: '' # Refers to default atlas image.
+    # background_down: '' # Refers to default atlas image.
+    # background_disabled_normal: '' # Refers to default atlas image.
+
+<BackgroundColor@Widget>:
+    bg_color: 1, 0, 0, 1
+    canvas.before:
+        Color:
+            rgba: root.bg_color
+        Rectangle:
+            size: self.size
+            pos: self.pos
+
+<Chat@Label+BackgroundColor>:
+    size_hint: None, None
+
+<BoxLayoutCanvas@BoxLayout+BackgroundColor>
+<GridLayoutCanvas@GridLayout+BackgroundColor>
+<AnchorLayoutCanvas@AnchorLayout+BackgroundColor>
+<FloatLayoutCanvas@FloatLayout+BackgroundColor>
+<ImageCanvas@Image+BackgroundColor>
+<LabelCanvas@Label+BackgroundColor>
